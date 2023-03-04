@@ -1,66 +1,118 @@
 package q4;
 
-import java.util.HashSet;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Q4 {
-    // returns the sets as a string array
-    private static String[] getSets(String input) {
-        String[] sets = input.split("].*\\[");
-        for (int i = 0; i < sets.length; i++) {
-            // remove characters that are not numbers, comma.
-            // also remove - that are not immediately followed by numbers.
-            sets[i] = sets[i].replaceAll("[^\\d,-]|-(?!\\d)", "");
-        }
-        return sets;
-    }
 
-    // returns the set operator
-    private static String getOperator(String input) {
-        return input.replaceAll("[,\\d\\s\\[\\]]|-(?=\\d)", "");
-    }
-
-    // creates a set object from the input set string
-    private static Set<Integer> createSet(String setString) {
-        Set<Integer> set = new HashSet<>();
-        String[] numbers = setString.split(",");
-        for (String number: numbers) {
-            set.add(Integer.parseInt(number));
+    public static void main(String[] args) throws IOException {
+        // tests
+        // [1, 2, 3] + [3, 5, 7]            ->          [1, 2, 3, 5, 7]
+        // [10, 9, 8, 7] * [2, 4, 6, 8]     ->          [8]
+        // [5, 10, 15, 20] - [0, 10, 20]    ->          [5, 15]
+        // [1, 2] + [3, 4] * [2, 3] - [2]   ->          [3]
+        SetCalculator calculator = new SetCalculator();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter set expression (quit to stop): ");
+        String input = br.readLine();
+        while (!input.equalsIgnoreCase("quit")) {
+            try {
+                System.out.printf("Result: %s\n\n", calculator.compute(input));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid Input\n");
+            }
+            System.out.print("Enter set expression (quit to stop): ");
+            input = br.readLine();
         }
-        return set;
+        br.close();
+    }
+}
+
+class SetCalculator {
+    private static final String VALID_OPERATORS = "+*-";
+    private static final String VALID_CHARS = VALID_OPERATORS + " []";
+    private final LinkedList<Character> operators = new LinkedList<>();
+    private final LinkedList<Set<Integer>> sets = new LinkedList<>();
+
+    // extracts sets and operators from input string
+    public boolean processInput(String input) {
+        sets.clear();
+        operators.clear();
+        ArrayList<Integer> numbers = new ArrayList<>();
+        StringBuilder number = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            // if character is a digit, or a '-' followed by a digit (for negative numbers)
+            if ( Character.isDigit(c) || (c == '-' && Character.isDigit(input.charAt(i + 1))) ) {
+                number.append(c);
+            }
+
+            // if end of number
+            else if (c == ',') {
+                try {
+                    numbers.add(Integer.parseInt(number.toString()));
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+                number = new StringBuilder();
+            }
+
+            // if character is a valid operator
+            else if (VALID_OPERATORS.contains(c + "")) {
+                operators.add(c);
+            }
+
+            // if end of set
+            else if (c == ']') {
+                try {
+                    numbers.add(Integer.parseInt(number.toString()));
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+                sets.add(new TreeSet<>(numbers));
+                number = new StringBuilder();
+                numbers.clear();
+            }
+
+            // if character is not valid
+            else if (!VALID_CHARS.contains(c + "")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // returns the result of the set operation
-    private static Set<Integer> performOperation(Set<Integer> set1, Set<Integer> set2, String operator) {
-        switch (operator) {
-            case "+":
-                set1.addAll(set2);
-                break;
-            case "*":
-                set1.retainAll(set2);
-                break;
-            case "-":
-                set1.removeAll(set2);
-                break;
+    public Set<Integer> compute(String input) {
+        if (processInput(input)) {
+            // the number of operators must be one less than the number of sets
+            if (sets.size() - operators.size() != 1) {
+                throw new IllegalArgumentException("Invalid Input");
+            }
+            Set<Integer> result = sets.poll();
+            for (Set<Integer> set: sets) {
+                if (operators.peek() != null) {
+                    switch (operators.poll()) {
+                        case '+':
+                            result.addAll(set);
+                            break;
+                        case '*':
+                            result.retainAll(set);
+                            break;
+                        case '-':
+                            result.removeAll(set);
+                            break;
+                    }
+                }
+            }
+            return result;
         }
-        return set1;
-    }
-
-    // computes and returns the result of "set1 (op) set2"
-    public static Set<Integer> compute(String input) {
-        String[] setStrings = getSets(input);
-        Set<Integer> set1 = createSet(setStrings[0]);
-        Set<Integer> set2 = createSet(setStrings[1]);
-        String operator = getOperator(input);
-        return performOperation(set1, set2, operator);
-    }
-
-    public static void main(String[] args) {
-        String input = "[1, 2, 3] + [3, 5, 7]";
-        String input2 = "[10,9,8,7] * [2,4,6,8]";
-        String input3 = "[5, 10, 15, 20] - [0, 10, 20]";
-        System.out.println(compute(input));
-        System.out.println(compute(input2));
-        System.out.println(compute(input3));
+        throw new IllegalArgumentException("Invalid Input");
     }
 }

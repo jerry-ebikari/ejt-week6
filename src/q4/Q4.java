@@ -37,10 +37,11 @@ class SetCalculator {
     private static final String VALID_OPERATORS = "+*-";
     private static final String VALID_CHARS = VALID_OPERATORS + " []";
     private final LinkedList<Character> operators = new LinkedList<>();
-    private final LinkedList<Set<Integer>> sets = new LinkedList<>();
+    private final LinkedList<Set<Integer>> sets = new LinkedList<>();   // operands
 
     // extracts sets and operators from input string
     public boolean processInput(String input) {
+        if (input == null) return false;
         sets.clear();
         operators.clear();
         ArrayList<Integer> numbers = new ArrayList<>();

@@ -92,7 +92,7 @@ class SetCalculator {
     // returns the result of the set operation
     public Set<Integer> compute(String input) {
         if (processInput(input)) {
-            // the number of operators must be one less than the number of sets
+            // the number of operators must be one less than the number of operands
             if (sets.size() - operators.size() != 1) {
                 throw new IllegalArgumentException("Invalid Input");
             }

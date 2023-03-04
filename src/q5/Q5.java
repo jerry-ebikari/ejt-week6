@@ -6,6 +6,7 @@ public class Q5 {
 
     // reverses a linked list
     public static <T> void reverse(LinkedList<T> linkedList) {
+        if (linkedList == null) return;
         Stack<T> stack = new Stack<>();
         while (!linkedList.isEmpty()) {
             stack.push(linkedList.pop());
@@ -17,6 +18,7 @@ public class Q5 {
 
     // reverses a linked hash map
     public static <K, V> void reverse(LinkedHashMap<K, V> map) {
+        if (map == null) return;
         LinkedList<K> keys = new LinkedList<>();
         map.forEach((key, value) -> keys.add(key));
         reverse(keys);

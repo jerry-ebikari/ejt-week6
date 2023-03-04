@@ -28,22 +28,28 @@ public class Q2 {
 class Predicates {
     // removes every object for which the predicate is true
     public static <T> void remove(Collection<T> coll, Predicate<T> pred) {
+        if (coll == null || pred == null) return;
         coll.removeIf(pred);
     }
 
     // retains only objects for which the predicate is true
     public static <T> void retain(Collection<T> coll, Predicate<T> pred) {
+        if (coll == null || pred == null) return;
         coll.removeIf(x -> !pred.test(x));
     }
 
     // returns a list of all objects for which the predicate is true
-    public static <T> List<T> collect(Collection<T> coll, Predicate<T> pred) {
+    public static <T> List<T> collect(Collection<T> coll, Predicate<T> pred) throws IllegalArgumentException {
+        if (coll == null || pred == null) {
+            throw new IllegalArgumentException("No null arguments allowed");
+        }
         return coll.stream().filter(pred).collect(Collectors.toList());
     }
 
     // returns the index of the first object for which the predicate is true
     // returns -1 if predicate is false for all objects
     public static <T> int find(ArrayList<T> list, Predicate<T> pred) {
+        if (list == null || pred == null) return -1;
         for (int i = 0; i < list.size(); i++) {
             if ( pred.test(list.get(i)) ) return i;
         }

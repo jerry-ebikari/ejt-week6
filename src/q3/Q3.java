@@ -9,7 +9,7 @@ public class Q3 {
         phoneDirectory.putNumber("jerry", "09045423281");
         phoneDirectory.putNumber("john", "09084934703");
         phoneDirectory.putNumber("george", "08103839834");
-        System.out.println(phoneDirectory);
+        System.out.printf("Phone Directory: %s\n", phoneDirectory);
         // get a number from phone directory
         System.out.printf("Jerry's phone number: %s\n", phoneDirectory.getNumber("jerry"));
     }

@@ -24,15 +24,17 @@ public class Q1 {
         // test stack sort method
         Stack<Integer> numbers = new Stack<>();
         numbers.addAll(List.of(4, 13, 1, 5, 9));
-        System.out.printf("Sorted Stack: %s\n", sort(numbers));
+        System.out.printf("Unsorted Stack: %s\n", numbers);
+        System.out.printf("Sorted Stack: %s\n\n", sort(numbers));
 
         // test custom stack
         CustomStack<String> customStack = new CustomStack<>();
         customStack.push("first");
         customStack.push("second");
         customStack.push("third");
+        System.out.printf("Stack before popping an item: %s\n", customStack);
         customStack.pop();
-        System.out.println(customStack);
+        System.out.printf("Stack after popping an item: %s\n", customStack);
 
     }
 }
